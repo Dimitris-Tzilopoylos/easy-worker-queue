@@ -9,12 +9,14 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var Worker = require("worker_threads").Worker;
 var EventEmitter = require("events");
@@ -27,14 +29,14 @@ var Queue = /** @class */ (function () {
             isAsync: false,
             onSuccess: function (data) { return data; },
             onError: function (data) { return data; },
-            onExit: function (data) { return data; }
+            onExit: function (data) { return data; },
         }; }
         return this._createNamespaceIfNotExists(namespace, filepath, workerOptions);
     };
     Queue.prototype.enqueue = function (namespace, data) {
         try {
             if (!this._namespaceExists(namespace)) {
-                throw new Error("Namespace: " + namespace + " is not registered");
+                throw new Error("Namespace: ".concat(namespace, " is not registered"));
             }
             this.namespaces[namespace].jobs.push(data);
             this.process(namespace);
@@ -45,7 +47,7 @@ var Queue = /** @class */ (function () {
     };
     Queue.prototype.dequeue = function (namespace) {
         if (this._namespaceJobsAreEmpty(namespace)) {
-            return null;
+            return "#QUEUE_IS_EMPTY";
         }
         return this.namespaces[namespace].jobs.shift();
     };
@@ -60,7 +62,7 @@ var Queue = /** @class */ (function () {
             }
             var worker = this._getNamespaceWorker(namespace);
             var jobData = this.dequeue(namespace);
-            if (!jobData) {
+            if (jobData === "#QUEUE_IS_EMPTY") {
                 this._namespaceEndProcessing(namespace);
                 return;
             }
@@ -69,7 +71,7 @@ var Queue = /** @class */ (function () {
                 namespace: namespace,
                 isAsync: this._getNamespaceAsyncMode(namespace),
                 executable: this._getNamespaceExecutablePath(namespace),
-                data: jobData
+                data: jobData,
             }));
         }
         catch (error) {
@@ -83,7 +85,7 @@ var Queue = /** @class */ (function () {
             var emitter = this.setupNamespaceEmitter(namespace, {
                 onSuccess: onSuccess,
                 onError: onError,
-                onExit: onExit
+                onExit: onExit,
             });
             this.namespaces[namespace] = {
                 jobs: [],
@@ -91,7 +93,7 @@ var Queue = /** @class */ (function () {
                 filepath: filepath,
                 isAsync: isAsync,
                 worker: null,
-                emitter: emitter
+                emitter: emitter,
             };
             var makeWorker = function () {
                 var worker = new Worker(__dirname + "/worker.js", options_1);
@@ -116,7 +118,7 @@ var Queue = /** @class */ (function () {
                     _this.process(namespace);
                 });
                 worker.on("exit", function (exitCode) {
-                    console.log("Worker " + namespace + " exited with code " + exitCode);
+                    console.log("Worker ".concat(namespace, " exited with code ").concat(exitCode));
                     _this.publishExitMessage(namespace, exitCode);
                     delete _this.namespaces[namespace];
                 });
@@ -263,7 +265,7 @@ var Queue = /** @class */ (function () {
             if (!this._namespaceExists(namespace)) {
                 return [];
             }
-            return __spreadArrays(this.namespaces[namespace].jobs);
+            return __spreadArray([], this.namespaces[namespace].jobs, true);
         }
         catch (error) {
             return [];

@@ -1,7 +1,7 @@
 {
   "name": "easy-worker-queue",
-  "version": "0.0.1",
-  "description": "Simple worker thread namespace based queue",
+  "version": "0.0.2",
+  "description": "Simple worker thread namespace based queue with support for scheduled jobs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -13,7 +13,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "node-cron": "^3.0.3"
+  },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.23.9",
