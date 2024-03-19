@@ -24,6 +24,12 @@ var Queue = /** @class */ (function () {
     function Queue() {
         this.namespaces = {};
     }
+    Queue.sleep = function (seconds) {
+        return new Promise(function (res) { return setTimeout(res, seconds * 1000); });
+    };
+    Queue.prototype.sleep = function (seconds) {
+        return new Promise(function (res) { return setTimeout(res, seconds * 1000); });
+    };
     Queue.prototype.createNameSpace = function (namespace, filepath, workerOptions) {
         if (workerOptions === void 0) { workerOptions = {
             isAsync: false,

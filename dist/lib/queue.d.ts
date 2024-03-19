@@ -1,6 +1,8 @@
 export = Queue;
 declare class Queue {
+  static sleep(seconds: number): any;
   namespaces: {};
+  sleep(seconds: number): any;
   createNameSpace(
     namespace: any,
     filepath: any,
@@ -11,7 +13,7 @@ declare class Queue {
       onExit?: (data: any) => any;
     }
   ): boolean;
-  enqueue(namespace: any, data?: any): void;
+  enqueue(namespace: any, data: any): void;
   dequeue(namespace: any): any;
   process(namespace: any): void;
   _createNamespaceIfNotExists(
