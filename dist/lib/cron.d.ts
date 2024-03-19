@@ -1,7 +1,11 @@
 export = CronQueue;
 declare class CronQueue extends Queue {
-  schedule(namespace: string, scheduleString: string, options?: any): void;
+  schedule(
+    namespace: string,
+    scheduleString: string,
+    options?: NodeCronOptions
+  ): void;
   getTasks(): any;
-  getTask(namespace: any): any;
+  getTask(namespace: string): any;
 }
 import Queue = require("./queue");

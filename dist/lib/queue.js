@@ -30,19 +30,26 @@ var Queue = /** @class */ (function () {
     Queue.prototype.sleep = function (seconds) {
         return new Promise(function (res) { return setTimeout(res, seconds * 1000); });
     };
-    Queue.prototype.createNameSpace = function (namespace, filepath, workerOptions) {
-        if (workerOptions === void 0) { workerOptions = {
+    Queue.prototype.createNameSpace = function (namespace, filepath, options) {
+        if (options === void 0) { options = {
             isAsync: false,
             onSuccess: function (data) { return data; },
             onError: function (data) { return data; },
             onExit: function (data) { return data; },
+            jobsLimit: -1,
         }; }
-        return this._createNamespaceIfNotExists(namespace, filepath, workerOptions);
+        return this._createNamespaceIfNotExists(namespace, filepath, options);
     };
     Queue.prototype.enqueue = function (namespace, data) {
+        var _a;
         try {
             if (!this._namespaceExists(namespace)) {
                 throw new Error("Namespace: ".concat(namespace, " is not registered"));
+            }
+            var max = (_a = this.namespaces[namespace]) === null || _a === void 0 ? void 0 : _a.jobsLimit;
+            if (typeof max === "number" &&
+                this.namespaces[namespace].jobs.length + 1 > max) {
+                throw new Error("Job could not be enqueued due to exceeding limit of ".concat(max));
             }
             this.namespaces[namespace].jobs.push(data);
             this.process(namespace);
@@ -87,7 +94,7 @@ var Queue = /** @class */ (function () {
     Queue.prototype._createNamespaceIfNotExists = function (namespace, filepath, workerOptions) {
         var _this = this;
         if (!this.namespaces[namespace]) {
-            var _a = workerOptions || {}, isAsync = _a.isAsync, onSuccess = _a.onSuccess, onError = _a.onError, onExit = _a.onExit, options_1 = __rest(_a, ["isAsync", "onSuccess", "onError", "onExit"]);
+            var _a = workerOptions || {}, isAsync = _a.isAsync, onSuccess = _a.onSuccess, onError = _a.onError, onExit = _a.onExit, jobsLimit = _a.jobsLimit, options_1 = __rest(_a, ["isAsync", "onSuccess", "onError", "onExit", "jobsLimit"]);
             var emitter = this.setupNamespaceEmitter(namespace, {
                 onSuccess: onSuccess,
                 onError: onError,
@@ -100,6 +107,7 @@ var Queue = /** @class */ (function () {
                 isAsync: isAsync,
                 worker: null,
                 emitter: emitter,
+                jobsLimit: isNaN(jobsLimit) ? Infinity : parseInt(jobsLimit),
             };
             var makeWorker = function () {
                 var worker = new Worker(__dirname + "/worker.js", options_1);

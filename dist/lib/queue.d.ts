@@ -4,16 +4,17 @@ declare class Queue {
   namespaces: {};
   sleep(seconds: number): any;
   createNameSpace(
-    namespace: any,
-    filepath: any,
-    workerOptions?: {
+    namespace: string,
+    filepath: string,
+    options?: {
       isAsync?: boolean;
       onSuccess?: (data: any) => any;
       onError?: (data: any) => any;
       onExit?: (data: any) => any;
+      jobsLimit?: number;
     }
   ): boolean;
-  enqueue(namespace: any, data: any): void;
+  enqueue(namespace: string, data?: any): void;
   dequeue(namespace: any): any;
   process(namespace: any): void;
   _createNamespaceIfNotExists(
@@ -36,7 +37,7 @@ declare class Queue {
   setupNamespaceEmitter(namespace: any, handlers: any): any;
   dropNamespaceEmitter(namespace: any): void;
   toWorkerResultPayload(data: any): any;
-  dropNamespace(namespace: any): void;
-  getNamespaceRemainingJobs(namespace: any): any;
-  getNamespaceJobs(namespace: any): any[];
+  dropNamespace(namespace: string): void;
+  getNamespaceRemainingJobs(namespace: string): any;
+  getNamespaceJobs(namespace: string): any[];
 }
