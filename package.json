@@ -1,6 +1,6 @@
 {
   "name": "easy-worker-queue",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "Simple worker thread namespace based queue with support for scheduled jobs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
     }
   },
   "keywords": [],
-  "author": "",
+  "author": "DimTzilop",
   "license": "ISC",
   "dependencies": {
     "node-cron": "^3.0.3"
